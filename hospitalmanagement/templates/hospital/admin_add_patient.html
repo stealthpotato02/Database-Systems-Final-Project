@@ -1,0 +1,157 @@
+{% extends 'hospital/admin_base.html' %}
+{% load widget_tweaks %}
+{% block content %}
+
+<head>
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    .note {
+      text-align: center;
+      height: 80px;
+      background: -webkit-linear-gradient(left, #0072ff, #8811c5);
+      color: #fff;
+      font-weight: bold;
+      line-height: 80px;
+    }
+
+    .form-content {
+      padding: 5%;
+      border: 1px solid #ced4da;
+      margin-bottom: 2%;
+    }
+
+    .form-control {
+      border-radius: 1.5rem;
+    }
+
+    .btnSubmit {
+      border: none;
+      border-radius: 1.5rem;
+      padding: 1%;
+      width: 20%;
+      cursor: pointer;
+      background: #0062cc;
+      color: #fff;
+    }
+
+    .menu {
+      top: 50px;
+    }
+  </style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('form').addEventListener('submit', function(event) {
+      event.preventDefault(); // Prevent default form submission
+
+      var formData = {
+        'data': {
+          'group': 'Patient',
+          'PatientID': document.querySelector('input[name="patient_id"]').value,
+          'Name': document.querySelector('input[name="name"]').value,
+          'Age': document.querySelector('input[name="age"]').value,
+          'ContactNumber': document.querySelector('input[name="contact_number"]').value,
+          'Address': document.querySelector('input[name="address"]').value,
+          'Gender': document.querySelector('input[name="gender"]').value,
+          'BloodType': document.querySelector('input[name="blood_type"]').value,
+          'InsuranceID': document.querySelector('input[name="insurance_id"]').value,
+          'EmergencyContact': document.querySelector('input[name="emergency_contact"]').value,
+          'HospitalID': document.querySelector('input[name="hospital_id"]').value,
+          'MedicalCondition': document.querySelector('input[name="medical_condition"]').value
+        }
+      };
+
+      fetch('http://127.0.0.1:5000/api/insert-data', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+      .then(response => response.json())
+      .then(data => alert('Doctor Added Successfully'))
+      .catch(error => alert('Error Adding Appointment: ' + error));
+    });
+  });
+</script>
+
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+</head>
+<br><br><br>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="container register-form">
+    <div class="form">
+      <div class="note">
+        <p>Add Patient</p>
+      </div>
+      <div class="form-content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                  <input type="text" class="form-control" name="patient_id" placeholder="PatientID">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="name" placeholder="Name">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="age" placeholder="Age">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="contact_number" placeholder="ContactNumber">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="address" placeholder="Address">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="gender" placeholder="Gender">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="blood_type" placeholder="BloodType">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="insurance_id" placeholder="Insurance ID">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="emergency_contact" placeholder="Emergency Contact">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="hospital_id" placeholder="Hospital ID">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="medical_condition" placeholder="Medical Condition">
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btnSubmit">Add</button>
+    </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('.btnSubmit').addEventListener('click', function(event) {
+            const fields = document.querySelectorAll('.form-content .form-control');
+            let allFieldsFilled = true;
+            
+            fields.forEach(field => {
+                if (!field.value.trim()) {
+                    allFieldsFilled = false;
+                }
+            });
+
+            if (!allFieldsFilled) {
+                event.preventDefault(); // Prevent form submission
+                alert('Please fill in all the fields.');
+            }
+        });
+    });
+</script>
+</form>
+{% endblock content %}

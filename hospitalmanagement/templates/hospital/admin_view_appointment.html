@@ -1,0 +1,98 @@
+{% extends 'hospital/admin_base.html' %}
+{% block content %}
+
+<head>
+  <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+  <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+
+  <style media="screen">
+    a:link {
+      text-decoration: none;
+    }
+
+    h6 {
+      text-align: center;
+    }
+
+    .row {
+      margin: 100px;
+    }
+  </style>
+</head>
+
+<div class="container">
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="panel panel-primary">
+        <div class="panel-heading" style="text-align:center;">
+          <h6 class="panel-title">Appointments</h6>
+        </div>
+        <table class="table table-hover" id="appointment-table">
+          <thead>
+            <tr>
+              <th>Appointment ID</th>
+              <th>Patient ID</th>
+              <th>Medical Professional ID</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="appointment-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function fetchAppointments() {
+    fetch('http://127.0.0.1:5000/api/get-appointment')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Received data:', data); // Log the received data
+        const tableBody = document.getElementById('appointment-body');
+        if (!tableBody) {
+          console.error('Table body not found');
+          return;
+        }
+        tableBody.innerHTML = ''; // Clear existing table data
+
+        if (data && data.length > 0) {
+          data.forEach((appointment, index) => {
+            console.log(`Processing appointment ${index}:`, appointment);
+            const row = document.createElement('tr'); // Create a new row element
+            row.innerHTML = `
+              <td>${appointment["AppointmentID"] ?? 'N/A'}</td>
+              <td>${appointment["PatientID"] ?? 'N/A'}</td>
+              <td>${appointment["MedicalProfessionalID"] ?? 'N/A'}</td>
+              <td>${appointment["Status"] ?? 'N/A'}</td>
+            `;
+            tableBody.appendChild(row); // Append the new row to the table body
+          });
+        } else {
+          const noDataRow = document.createElement('tr');
+          noDataRow.innerHTML = '<td colspan="4">No appointments found.</td>';
+          tableBody.appendChild(noDataRow);
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching appointments:', error);
+        const tableBody = document.getElementById('appointment-body');
+        if (tableBody) {
+          const errorRow = document.createElement('tr');
+          errorRow.innerHTML = '<td colspan="4">Error loading appointments.</td>';
+          tableBody.appendChild(errorRow);
+        }
+      });
+  }
+
+  window.addEventListener('load', fetchAppointments);
+</script>
+{% endblock content %}
